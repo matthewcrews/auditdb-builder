@@ -4,8 +4,6 @@
 open System.IO
 open FSharp.Configuration
 
-
-type ExampleYamlConfig = YamlConfig<"ExampleConfig.yaml">
 type AuditableDbConfig = YamlConfig<"AuditableDbConfig.yaml">
 type TableConfig = AuditableDbConfig.Config_Type
 type TableDef = AuditableDbConfig.Tables_Item_Type
@@ -70,15 +68,15 @@ let ComposeSequenceSql (schema:string) (t:TableDef) =
 [<EntryPoint>]
 let main argv = 
     printfn "%A" argv
-    let tableDir = argv.[0]
-    let auditDir = argv.[1]
-    let sequenceDir = argv.[2]
+    let outputDir = argv.[0]
+    let tableDir = argv.[1]
+    let auditDir = argv.[2]
+    let sequenceDir = argv.[3]
 
     CreateDir tableDir
     CreateDir auditDir
     CreateDir sequenceDir
 
-    let dbConfig = ExampleYamlConfig()
     let auditConfig = AuditableDbConfig()
     auditConfig.Load("AuditableDbConfig.yaml")
     let fieldConverter =
@@ -86,35 +84,19 @@ let main argv =
         |> Seq.map (fun e -> e.Type, e.Output)
         |> Map.ofSeq
         |> FieldTypeToStringBuilder
-
-    //let auditFields =
-    //    auditConfig.Config.AuditFields
-    //    |> List.ofSeq
     
 
     for t in auditConfig.Tables do
-        let tableSqlFile = Path.Combine(tableDir, (t.Name + ".sql"))
+        let tableSqlFile = Path.Combine(outputDir, tableDir, (t.Name + ".sql"))
         let tableSql = ComposeTableSql fieldConverter auditConfig.Config "dbo" t
         File.WriteAllText(tableSqlFile, tableSql)
 
-        let auditSqlFile = Path.Combine(auditDir, (t.Name + ".sql"))
+        let auditSqlFile = Path.Combine(outputDir, auditDir, (t.Name + ".sql"))
         let auditSql = ComposeTableSql fieldConverter auditConfig.Config auditConfig.Config.AuditSchemaName t
         File.WriteAllText(auditSqlFile, auditSql)
 
-        let sequenceSqlFile = Path.Combine(sequenceDir, (t.Name + "Ver.sql"))
+        let sequenceSqlFile = Path.Combine(outputDir, sequenceDir, (t.Name + "Ver.sql"))
         let sequenceSql = ComposeSequenceSql auditConfig.Config.AuditSchemaName t
-        File.WriteAllText(sequenceSqlFile, sequenceSql)
-
-        //if t.Unique.[0] <> "n" then
-        //    let uniqConstraintSql = (ComposeUniqueConstriantSql t)
-        //    let outputSql = tableSql + newline + uniqConstraintSql
-        //    File.WriteAllText(outputFile, tableSql)
-        //else
-        //    let tableSql = ComposeTableDefSql fieldConverter auditConfig.Config t
-        //    File.WriteAllText(outputFile, tableSql)
-    //auditConfig.Config.TypeMap.[0].
-    //auditConfig.Tables.[0].fields.[0].
-    //dbConfig.Companies.[0].
-    
+        File.WriteAllText(sequenceSqlFile, sequenceSql)    
 
     0 // return an integer exit code

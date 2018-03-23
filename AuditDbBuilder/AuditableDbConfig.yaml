@@ -28,44 +28,93 @@
     Output: BIGINT NOT NULL
   - Type: _bi
     Output: BIGINT NULL
+  - Type: guid
+    Output:   UNIQUEIDENTIFIER NOT NULL
   AuditFields:
   - Name: Id
     Type: pk
-  - Name: TenantId
-    Type: i
   - Name: EffDateTime
     Type: dt
   - Name: ExpDateTime
     Type: dt
   - Name: Ver
     Type: bi
-AuditedTables:
-  - Name: User
+Tables:
+  - Name: Tenant
     Fields:
+    - Name: TenantGuid
+      Type: guid
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantGuid
+  - Name: ActionType
+    Fields:
+    - Name: TenantId
+      Type: i
     - Name: ExtId
       Type: ss
     - Name: Desc
       Type: ls
     Unique:
+    - TenantId
     - ExtId
   - Name: Action
     Fields:
+    - Name: TenantId
+      Type: i
     - Name: ActionTypeId
       Type: i
     - Name: UserId
       Type: i
+    - Name: PerformedDateTime
+      Type: dt
     Unique:
     - n
+  - Name: User
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantId
+    - ExtId
   - Name: AltIdType
     Fields:
+    - Name: TenantId
+      Type: i
     - Name: ExtId
       Type: ss
     - Name: Desc
       Type: ls
     Unique:
     - ExtId
-NonauditedTables:
-    - Name: Tenant
-      Fields:
-      - Name: Id
-        Type: pk
+  - Name: AltId
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: AltIdType
+      Type: i
+    - Name: Value
+      Type: ss
+    Unique:
+    - TenantId
+    - AltIdTypeId
+    - Value
+  - Name: Listing
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: MarketplaceId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantId
+    - MarketplaceId
+    - ExtId
