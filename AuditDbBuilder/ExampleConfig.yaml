@@ -1,0 +1,9 @@
+﻿Companies:
+  - code: 11
+    name: A
+    country: FR
+    functionalCurrency: EUR
+  - code: 12
+    name: B
+    country: GB
+    functionalCurrency: GBP

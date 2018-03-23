@@ -1,0 +1,71 @@
+﻿Config:
+  AuditSchemaName: audit
+  TableFieldIndentation: 4
+  TypeMap:
+  - Type: ss
+    Output: NVARCHAR(50) NOT NULL
+  - Type: _ss
+    Output: NVARCHAR(50) NULL
+  - Type: ls
+    Output: NVARCHAR(500)NOT NULL
+  - Type: _ls
+    Output: NVARCHAR(500)NULL
+  - Type: d
+    Output: DECIMAL(19, 6) NOT NULL
+  - Type: _d
+    Output: DECIMAL(19, 6) NULL
+  - Type: i
+    Output: INT NOT NULL
+  - Type: _i
+    Output: INT NULL
+  - Type: pk
+    Output: INT IDENTITY(1, 1) PRIMARY KEY
+  - Type: dt
+    Output: DATETIMEOFFSET NOT NULL
+  - Type: _dt
+    Output: DATETIMEOFFSET NULL
+  - Type: bi
+    Output: BIGINT NOT NULL
+  - Type: _bi
+    Output: BIGINT NULL
+  AuditFields:
+  - Name: Id
+    Type: pk
+  - Name: TenantId
+    Type: i
+  - Name: EffDateTime
+    Type: dt
+  - Name: ExpDateTime
+    Type: dt
+  - Name: Ver
+    Type: bi
+AuditedTables:
+  - Name: User
+    Fields:
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - ExtId
+  - Name: Action
+    Fields:
+    - Name: ActionTypeId
+      Type: i
+    - Name: UserId
+      Type: i
+    Unique:
+    - n
+  - Name: AltIdType
+    Fields:
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - ExtId
+NonauditedTables:
+    - Name: Tenant
+      Fields:
+      - Name: Id
+        Type: pk
