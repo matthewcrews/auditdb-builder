@@ -43,7 +43,10 @@ let ComposeTableDefSql (fm:FieldTypeToSql) (schema:string) (c:TableConfig) (t:Ta
 
 let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
     let newline = System.Environment.NewLine
-    let fields = String.concat ", " t.Unique
+    let fields = 
+        t.Unique
+        |> Seq.map (fun e -> sprintf "[%s]" e)
+        |> String.concat ", "
     sprintf "CREATE UNIQUE INDEX UIDX_%s on [%s].[%s] (%s);%sgo" t.Name schema t.Name fields newline
 
 let ComposeTableSql (fm:FieldTypeToSql) (c:TableConfig) (schema:string) (t:TableDef) =
@@ -68,17 +71,19 @@ let ComposeSequenceSql (schema:string) (t:TableDef) =
 [<EntryPoint>]
 let main argv = 
     printfn "%A" argv
-    let outputDir = argv.[0]
-    let tableDir = argv.[1]
-    let auditDir = argv.[2]
-    let sequenceDir = argv.[3]
+    let configFile = argv.[0]
+    let outputDir = argv.[1]
+    let tableDir = Path.Combine(outputDir, argv.[2])
+    let auditDir = Path.Combine(outputDir, argv.[3])
+    let sequenceDir = Path.Combine(outputDir, argv.[4])
 
+    CreateDir outputDir
     CreateDir tableDir
     CreateDir auditDir
     CreateDir sequenceDir
 
     let auditConfig = AuditableDbConfig()
-    auditConfig.Load("AuditableDbConfig.yaml")
+    auditConfig.Load(configFile)
     let fieldConverter =
         auditConfig.Config.TypeMap
         |> Seq.map (fun e -> e.Type, e.Output)
@@ -87,15 +92,15 @@ let main argv =
     
 
     for t in auditConfig.Tables do
-        let tableSqlFile = Path.Combine(outputDir, tableDir, (t.Name + ".sql"))
+        let tableSqlFile = Path.Combine(tableDir, (t.Name + ".sql"))
         let tableSql = ComposeTableSql fieldConverter auditConfig.Config "dbo" t
         File.WriteAllText(tableSqlFile, tableSql)
 
-        let auditSqlFile = Path.Combine(outputDir, auditDir, (t.Name + ".sql"))
+        let auditSqlFile = Path.Combine(auditDir, (t.Name + ".sql"))
         let auditSql = ComposeTableSql fieldConverter auditConfig.Config auditConfig.Config.AuditSchemaName t
         File.WriteAllText(auditSqlFile, auditSql)
 
-        let sequenceSqlFile = Path.Combine(outputDir, sequenceDir, (t.Name + "Ver.sql"))
+        let sequenceSqlFile = Path.Combine(sequenceDir, (t.Name + "Ver.sql"))
         let sequenceSql = ComposeSequenceSql auditConfig.Config.AuditSchemaName t
         File.WriteAllText(sequenceSqlFile, sequenceSql)    
 

@@ -7,9 +7,9 @@
   - Type: _ss
     Output: NVARCHAR(50) NULL
   - Type: ls
-    Output: NVARCHAR(500)NOT NULL
+    Output: NVARCHAR(500) NOT NULL
   - Type: _ls
-    Output: NVARCHAR(500)NULL
+    Output: NVARCHAR(500) NULL
   - Type: d
     Output: DECIMAL(19, 6) NOT NULL
   - Type: _d
@@ -118,3 +118,152 @@ Tables:
     - TenantId
     - MarketplaceId
     - ExtId
+  - Name: Marketplace
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantId
+    - ExtId
+  - Name: StatusType
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantId
+    - ExtId
+  - Name: Status
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: StatusTypeId
+      Type: i
+    - Name: Code
+      Type: ss
+    Unique:
+    - TenantId
+    - StatusTypeId
+    - Code
+  - Name: StockItem
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    - Name: InventoryId
+      Type: ss
+    Unique:
+    - TenantId
+    - ExtId
+  - Name: StockItemAltId
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: StockItemId
+      Type: i
+    - Name: AltId
+      Type: i
+    Unique:
+    - n
+  - Name: Vendor
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - n
+  - Name: VendorPart
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorId
+      Type: i
+    - Name: Nbr
+      Type: ss
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantId
+    - VendorId
+    - Nbr
+  - Name: VendorPartAltId
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorPartId
+      Type: i
+    - Name: AltId
+      Type: i
+    Unique:
+    - TenantId
+    - VendorPartid
+    - AltId
+  - Name: VendorPartListingMatch
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorPartId
+      Type: i
+    - Name: MarketplaceId
+      Type: i
+    - Name: ListingId
+      Type: i
+    - Name: StatusId
+      Type: i
+    Unique:
+    - TenantId
+    - VendorPartId
+    - MarketplaceId
+    - ListingId
+  - Name: VendorPartListingAssignment
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorPartId
+      Type: i
+    - Name: MarketplaceId
+      Type: i
+    - Name: ListingId
+      Type: i
+    Unique:
+    - TenantId
+    - VendorPartId
+    - MarketplaceId
+  - Name: VendorPartStockItemMatch
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorPartId
+      Type: i
+    - Name: StockItemId
+      Type: i
+    - Name: StatusId
+      Type: i
+    Unique:
+    - TenantId
+    - VendorPartId
+    - StockItemId
+  - Name: VendorPartStockItemAssignment
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorPartId
+      Type: i
+    - Name: StockItemId
+      Type: i
+    Unique:
+    - TenantId
+    - VendorPartId
