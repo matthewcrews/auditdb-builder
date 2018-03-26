@@ -41,9 +41,12 @@ let ComposeConstraints (c:TableConfig) (t:TableDef) (tableName:string) =
     else
         Seq.empty<string>
 
-let ComposeTableDefSql (fm:FieldTypeToSql) (schema:string) (c:TableConfig) (t:TableDef) (tableName:string) =
+let ComposeTableDefSql (fm:FieldTypeToSql) (schema:string) (c:TableConfig) (t:TableDef) (tableName:string) (includeForeignKeys:bool) =
     let fieldsSql = ComposeFieldsSql fm c t
-    let constraintsSql = ComposeConstraints c t tableName
+    let constraintsSql = 
+        match includeForeignKeys with
+        | true -> ComposeConstraints c t tableName
+        | false -> Seq.empty<string>
     let newlineDelimieter = sprintf ",%s" newline
     let tableSql = String.concat newlineDelimieter (Seq.append fieldsSql constraintsSql)
     sprintf "CREATE TABLE [%s].[%s]%s(%s%s%s)%sgo%s" schema tableName newline newline tableSql newline newline newline
@@ -56,11 +59,11 @@ let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
         |> String.concat ", "
     sprintf "CREATE UNIQUE INDEX UIDX_%s on [%s].[%s] (%s);%sgo" t.Name schema t.Name fields newline
 
-let ComposeTableSql (fm:FieldTypeToSql) (c:TableConfig) (schema:string) (t:TableDef) (includeUniqueConst:bool) (tableName:string) =
+let ComposeTableSql (fm:FieldTypeToSql) (c:TableConfig) (schema:string) (t:TableDef) (includeForeignKeys:bool) (includeUniqueConst:bool) (tableName:string) =
     if includeUniqueConst && t.ForeignKeys.Count > 0 then
-        (ComposeTableDefSql fm schema c t tableName) + newline + (ComposeUniqueConstriantSql schema t)
+        (ComposeTableDefSql fm schema c t tableName includeForeignKeys) + newline + (ComposeUniqueConstriantSql schema t)
     else
-        ComposeTableDefSql fm schema c t tableName
+        ComposeTableDefSql fm schema c t tableName includeForeignKeys
 
 let CreateDir d =
     if not(Directory.Exists(d)) then
@@ -107,11 +110,11 @@ let main argv =
 
     for t in auditConfig.Tables do
         let tableSqlFile = Path.Combine(tableDir, (t.Name + ".sql"))
-        let tableSql = ComposeTableSql tableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t true t.Name
+        let tableSql = ComposeTableSql tableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t true true t.Name
         File.WriteAllText(tableSqlFile, tableSql)
 
         let auditSqlFile = Path.Combine(auditDir, (t.Name + auditConfig.TableConfig.AuditTableNameAppend + ".sql"))
-        let auditSql = ComposeTableSql historyTableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t false (t.Name + auditConfig.TableConfig.AuditTableNameAppend)
+        let auditSql = ComposeTableSql historyTableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t false false (t.Name + auditConfig.TableConfig.AuditTableNameAppend)
         File.WriteAllText(auditSqlFile, auditSql)
 
         let sequenceSqlFile = Path.Combine(sequenceDir, (t.Name + "Ver.sql"))
