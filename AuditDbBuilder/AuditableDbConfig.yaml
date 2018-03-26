@@ -1,5 +1,6 @@
-﻿Config:
-  AuditSchemaName: audit
+﻿TableConfig:
+  OutputSchema: dbo
+  AuditTableNameAppend: History
   TableFieldIndentation: 4
   StartingIdNumber: 65536
   TypeMap:
@@ -12,13 +13,40 @@
   - Type: i
     Output: INT
   - Type: pk
-    Output: INT IDENTITY(1, 1) PRIMARY KEY
+    Output: INT IDENTITY(65536, 1) PRIMARY KEY
   - Type: dt
     Output: DATETIME2
   - Type: bi
     Output: BIGINT
   - Type: guid
-    Output:   UNIQUEIDENTIFIER
+    Output: UNIQUEIDENTIFIER
+  - Type: upc
+    Output: CHAR(12)
+  - Type: ean
+    Output: CHAR(13)
+  - Type: gtin
+    Output: CHAR(14)
+  - Type: asin
+    Output: CHAR(10)
+  - Type: b
+    Output: BIT
+  HistoryTableTypeMap:
+  - Type: ss
+    Output: NVARCHAR(50)
+  - Type: ls
+    Output: NVARCHAR(500)
+  - Type: d
+    Output: DECIMAL(19, 6)
+  - Type: i
+    Output: INT
+  - Type: pk
+    Output: INT
+  - Type: dt
+    Output: DATETIME2
+  - Type: bi
+    Output: BIGINT
+  - Type: guid
+    Output: UNIQUEIDENTIFIER
   - Type: upc
     Output: CHAR(12)
   - Type: ean
@@ -45,7 +73,7 @@ Tables:
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantId
@@ -57,22 +85,22 @@ Tables:
     Fields:
     - Name: TenantGuid
       Type: guid
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantGuid
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: AltIdType
     Fields:
     - Name: TenantId
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: AltId
     Fields:
     - Name: TenantId
@@ -85,7 +113,7 @@ Tables:
     - TenantId
     - AltIdTypeId
     - Value
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: Listing
     Fields:
     - Name: TenantId
@@ -94,37 +122,37 @@ Tables:
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantId
     - MarketplaceId
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: Marketplace
     Fields:
     - Name: TenantId
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: StatusType
     Fields:
     - Name: TenantId
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: Status
     Fields:
     - Name: TenantId
@@ -137,21 +165,21 @@ Tables:
     - TenantId
     - StatusTypeId
     - Code
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: StockItem
     Fields:
     - Name: TenantId
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     - Name: InventoryId
       Type: ss
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: StockItemAltId
     Fields:
     - Name: TenantId
@@ -160,20 +188,20 @@ Tables:
       Type: i
     - Name: AltId
       Type: i
-    Unique:
-    - n
-    ForeignKeys:
+    Unique: {}
+    ForeignKeys: {}
   - Name: Vendor
     Fields:
     - Name: TenantId
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
-    - n
-    ForeignKeys:
+    - TenantId
+    - ExtId
+    ForeignKeys: {}
   - Name: VendorPart
     Fields:
     - Name: TenantId
@@ -182,13 +210,13 @@ Tables:
       Type: i
     - Name: Nbr
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     Unique:
     - TenantId
     - VendorId
     - Nbr
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: VendorPartAltId
     Fields:
     - Name: TenantId
@@ -201,7 +229,7 @@ Tables:
     - TenantId
     - VendorPartid
     - AltId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: VendorPartListingMatch
     Fields:
     - Name: TenantId
@@ -219,7 +247,7 @@ Tables:
     - VendorPartId
     - MarketplaceId
     - ListingId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: VendorPartListingAssignment
     Fields:
     - Name: TenantId
@@ -234,7 +262,7 @@ Tables:
     - TenantId
     - VendorPartId
     - MarketplaceId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: VendorPartStockItemMatch
     Fields:
     - Name: TenantId
@@ -249,7 +277,7 @@ Tables:
     - TenantId
     - VendorPartId
     - StockItemId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: VendorPartStockItemAssignment
     Fields:
     - Name: TenantId
@@ -261,7 +289,7 @@ Tables:
     Unique:
     - TenantId
     - VendorPartId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: Catalog
     Fields:
     - Name: TenantId
@@ -270,7 +298,7 @@ Tables:
       Type: i
     - Name: ExtId
       Type: ss
-    - Name: Desc
+    - Name: Description
       Type: ls
     - Name: LoadedByUserId
       Type: i
@@ -280,7 +308,7 @@ Tables:
     - TenantId
     - VendorId
     - ExtId
-    ForeignKeys:
+    ForeignKeys: {}
   - Name: CatalogItem
     Fields:
     - Name: TenantId
@@ -299,7 +327,7 @@ Tables:
       Type: i
     - Name: Msrp
       Type: _d
-    - Name: Desc
+    - Name: Description
       Type: _ls
     - Name: Upc
       Type: _upc
@@ -307,4 +335,4 @@ Tables:
     - TenantId
     - CatalogId
     - PartNumber
-    ForeignKeys:
+    ForeignKeys: {}

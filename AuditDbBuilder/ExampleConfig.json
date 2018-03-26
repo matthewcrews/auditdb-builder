@@ -1,60 +1,57 @@
 ﻿{
   "TableConfig": {
-    "AuditSchemaName": "audit",
+    "OutputSchema": "dbo",
+    "AuditTableAppend": "History",
     "TableFieldIndentation": 4,
-    "TypeMap": [
-      {
-        "Type": "ss",
-        "Output": "NVARCHAR(50)"
-      },
-      {
-        "Type": "ls",
-        "Output": "NVARCHAR(500)"
-      },
-      {
-        "Type": "d",
-        "Output": "DECIMAL(19, 6)"
-      },
-      {
-        "Type": "i",
-        "Output": "INT"
-      },
-      {
-        "Type": "pk",
-        "Output": "INT IDENTITY(1, 65536) PRIMARY KEY"
-      },
-      {
-        "Type": "dt",
-        "Output": "DATETIME2"
-      },
-      {
-        "Type": "bi",
-        "Output": "BIGINT"
-      },
-      {
-        "Type": "guid",
-        "Output": "UNIQUEIDENTIFIER"
-      },
-      {
-        "Type": "upc",
-        "Output": "CHAR(12)"
-      },
-      {
-        "Type": "ean",
-        "Output": "CHAR(13)"
-      },
-      {
-        "Type": "gtin",
-        "Output": "CHAR(14)"
-      },
-      {
-        "Type": "asin",
-        "Output": "CHAR(10)"
-      },
-      {
-        "Type": "b",
-        "Output": "BIT"
-      }
+    "AuditFields": {
+      "Fields": [
+        {
+          "Name": "Id",
+          "Type": "pk"
+        },
+        {
+          "Name": "EffDateTime",
+          "Type": "dt"
+        },
+        {
+          "Name": "ExpDateTime",
+          "Type": "dt"
+        },
+        {
+          "Name": "Ver",
+          "Type": "bi"
+        }
+      ]
+    },
+    "TypeMap": {
+      "ss": "NVARCHAR(50)",
+      "ls": "NVARCHAR(500)",
+      "d": "DECIMAL(19, 6)",
+      "i": "INT",
+      "pk": "IDENTITY(65565, 1) PRIMARY KEY",
+      "dt": "DATETIME2",
+      "bi": "BIGINT",
+      "guid": "UNIQUEIDENTIFIER",
+      "upc": "CHAR(12)",
+      "ean": "CHAR(13)",
+      "gtin": "CHAR(14)",
+      "asin": "CHAR(10)",
+      "b": "BIT"
+    },
+    "HistoryTableTypeMap": [
+      { "ss": "NVARCHAR(50)" },
+      { "ls": "NVARCHAR(500)" },
+      { "d": "DECIMAL(19, 6)" },
+      { "i": "INT" },
+      { "pk": "INT" },
+      { "dt": "DATETIME2" },
+      { "bi": "BIGINT" },
+      { "guid": "UNIQUEIDENTIFIER" },
+      { "upc": "CHAR(12)" },
+      { "ean": "CHAR(13)" },
+      { "gtin": "CHAR(14)" },
+      { "asin": "CHAR(10)" },
+      { "b": "BIT" }
     ]
   },
   "Tables": [
@@ -66,8 +63,8 @@
           "Type": "i"
         },
         {
-          "Name": "TenantId",
-          "Type": "i"
+          "Name": "ExtId",
+          "Type": "ss"
         }
       ],
       "Unique": [
@@ -78,6 +75,27 @@
         {
           "Table": "Tenant",
           "Field": "TenantId"
+        }
+      ]
+    },
+    {
+      "Name": "Tenant",
+      "Fields": [
+        {
+          "Name": "TenantGuid",
+          "Type": "guid"
+        }
+      ],
+      "Unique": [
+        "TenantGuid"
+      ]
+    },
+    {
+      "Name": "NonUnique",
+      "Fields": [
+        {
+          "Name": "TenantGuid",
+          "Type": "guid"
         }
       ]
     }
