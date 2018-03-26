@@ -55,9 +55,10 @@ let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
     sprintf "CREATE UNIQUE INDEX UIDX_%s on [%s].[%s] (%s);%sgo" t.Name schema t.Name fields newline
 
 let ComposeTableSql (fm:FieldTypeToSql) (c:TableConfig) (schema:string) (t:TableDef) =
-    match t.Unique.[0] <> "n" with
-    | false -> ComposeTableDefSql fm schema c t
-    | true -> (ComposeTableDefSql fm schema c t) + newline + (ComposeUniqueConstriantSql schema t)
+    if (t.Unique.[0] <> "n" && c.AuditSchemaName <> schema) then
+        (ComposeTableDefSql fm schema c t) + newline + (ComposeUniqueConstriantSql schema t)
+    else
+        ComposeTableDefSql fm schema c t
 
 let CreateDir d =
     if not(Directory.Exists(d)) then
