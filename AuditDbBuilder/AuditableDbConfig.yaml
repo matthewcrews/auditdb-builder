@@ -1,6 +1,7 @@
 ﻿Config:
   AuditSchemaName: audit
   TableFieldIndentation: 4
+  StartingIdNumber: 65536
   TypeMap:
   - Type: ss
     Output: NVARCHAR(50)
@@ -13,7 +14,7 @@
   - Type: pk
     Output: INT IDENTITY(1, 1) PRIMARY KEY
   - Type: dt
-    Output: DATETIMEOFFSET
+    Output: DATETIME2
   - Type: bi
     Output: BIGINT
   - Type: guid
@@ -38,37 +39,6 @@
   - Name: Ver
     Type: bi
 Tables:
-  - Name: Tenant
-    Fields:
-    - Name: TenantGuid
-      Type: guid
-    - Name: Desc
-      Type: ls
-    Unique:
-    - TenantGuid
-  - Name: ActionType
-    Fields:
-    - Name: TenantId
-      Type: i
-    - Name: ExtId
-      Type: ss
-    - Name: Desc
-      Type: ls
-    Unique:
-    - TenantId
-    - ExtId
-  - Name: Action
-    Fields:
-    - Name: TenantId
-      Type: i
-    - Name: ActionTypeId
-      Type: i
-    - Name: UserId
-      Type: i
-    - Name: PerformedDateTime
-      Type: dt
-    Unique:
-    - n
   - Name: User
     Fields:
     - Name: TenantId
@@ -80,6 +50,18 @@ Tables:
     Unique:
     - TenantId
     - ExtId
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+  - Name: Tenant
+    Fields:
+    - Name: TenantGuid
+      Type: guid
+    - Name: Desc
+      Type: ls
+    Unique:
+    - TenantGuid
+    ForeignKeys:
   - Name: AltIdType
     Fields:
     - Name: TenantId
@@ -90,6 +72,7 @@ Tables:
       Type: ls
     Unique:
     - ExtId
+    ForeignKeys:
   - Name: AltId
     Fields:
     - Name: TenantId
@@ -102,6 +85,7 @@ Tables:
     - TenantId
     - AltIdTypeId
     - Value
+    ForeignKeys:
   - Name: Listing
     Fields:
     - Name: TenantId
@@ -116,6 +100,7 @@ Tables:
     - TenantId
     - MarketplaceId
     - ExtId
+    ForeignKeys:
   - Name: Marketplace
     Fields:
     - Name: TenantId
@@ -127,6 +112,7 @@ Tables:
     Unique:
     - TenantId
     - ExtId
+    ForeignKeys:
   - Name: StatusType
     Fields:
     - Name: TenantId
@@ -138,6 +124,7 @@ Tables:
     Unique:
     - TenantId
     - ExtId
+    ForeignKeys:
   - Name: Status
     Fields:
     - Name: TenantId
@@ -150,6 +137,7 @@ Tables:
     - TenantId
     - StatusTypeId
     - Code
+    ForeignKeys:
   - Name: StockItem
     Fields:
     - Name: TenantId
@@ -163,6 +151,7 @@ Tables:
     Unique:
     - TenantId
     - ExtId
+    ForeignKeys:
   - Name: StockItemAltId
     Fields:
     - Name: TenantId
@@ -173,6 +162,7 @@ Tables:
       Type: i
     Unique:
     - n
+    ForeignKeys:
   - Name: Vendor
     Fields:
     - Name: TenantId
@@ -183,6 +173,7 @@ Tables:
       Type: ls
     Unique:
     - n
+    ForeignKeys:
   - Name: VendorPart
     Fields:
     - Name: TenantId
@@ -197,6 +188,7 @@ Tables:
     - TenantId
     - VendorId
     - Nbr
+    ForeignKeys:
   - Name: VendorPartAltId
     Fields:
     - Name: TenantId
@@ -209,6 +201,7 @@ Tables:
     - TenantId
     - VendorPartid
     - AltId
+    ForeignKeys:
   - Name: VendorPartListingMatch
     Fields:
     - Name: TenantId
@@ -226,6 +219,7 @@ Tables:
     - VendorPartId
     - MarketplaceId
     - ListingId
+    ForeignKeys:
   - Name: VendorPartListingAssignment
     Fields:
     - Name: TenantId
@@ -240,6 +234,7 @@ Tables:
     - TenantId
     - VendorPartId
     - MarketplaceId
+    ForeignKeys:
   - Name: VendorPartStockItemMatch
     Fields:
     - Name: TenantId
@@ -254,6 +249,7 @@ Tables:
     - TenantId
     - VendorPartId
     - StockItemId
+    ForeignKeys:
   - Name: VendorPartStockItemAssignment
     Fields:
     - Name: TenantId
@@ -265,6 +261,7 @@ Tables:
     Unique:
     - TenantId
     - VendorPartId
+    ForeignKeys:
   - Name: Catalog
     Fields:
     - Name: TenantId
@@ -283,13 +280,14 @@ Tables:
     - TenantId
     - VendorId
     - ExtId
+    ForeignKeys:
   - Name: CatalogItem
     Fields:
     - Name: TenantId
       Type: i
     - Name: CatalogId
       Type: i
-    - Name: PartNbr
+    - Name: PartNumber
       Type: ss
     - Name: UnitCost
       Type: d
@@ -308,4 +306,5 @@ Tables:
     Unique:
     - TenantId
     - CatalogId
-    - PartNbr
+    - PartNumber
+    ForeignKeys:

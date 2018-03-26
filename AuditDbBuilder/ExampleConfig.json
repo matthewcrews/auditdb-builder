@@ -1,0 +1,85 @@
+﻿{
+  "TableConfig": {
+    "AuditSchemaName": "audit",
+    "TableFieldIndentation": 4,
+    "TypeMap": [
+      {
+        "Type": "ss",
+        "Output": "NVARCHAR(50)"
+      },
+      {
+        "Type": "ls",
+        "Output": "NVARCHAR(500)"
+      },
+      {
+        "Type": "d",
+        "Output": "DECIMAL(19, 6)"
+      },
+      {
+        "Type": "i",
+        "Output": "INT"
+      },
+      {
+        "Type": "pk",
+        "Output": "INT IDENTITY(1, 65536) PRIMARY KEY"
+      },
+      {
+        "Type": "dt",
+        "Output": "DATETIME2"
+      },
+      {
+        "Type": "bi",
+        "Output": "BIGINT"
+      },
+      {
+        "Type": "guid",
+        "Output": "UNIQUEIDENTIFIER"
+      },
+      {
+        "Type": "upc",
+        "Output": "CHAR(12)"
+      },
+      {
+        "Type": "ean",
+        "Output": "CHAR(13)"
+      },
+      {
+        "Type": "gtin",
+        "Output": "CHAR(14)"
+      },
+      {
+        "Type": "asin",
+        "Output": "CHAR(10)"
+      },
+      {
+        "Type": "b",
+        "Output": "BIT"
+      }
+    ]
+  },
+  "Tables": [
+    {
+      "Name": "User",
+      "Fields": [
+        {
+          "Name": "TenantId",
+          "Type": "i"
+        },
+        {
+          "Name": "TenantId",
+          "Type": "i"
+        }
+      ],
+      "Unique": [
+        "TenantId",
+        "ExtId"
+      ],
+      "ForeignKeys": [
+        {
+          "Table": "Tenant",
+          "Field": "TenantId"
+        }
+      ]
+    }
+  ]
+}

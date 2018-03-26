@@ -37,14 +37,22 @@ let ComposeFieldsSql (fieldMapper:FieldTypeToSql) (c:TableConfig) (t:TableDef) =
     let dataFields =
         t.Fields
         |> Seq.map (fun e -> fieldComposer e.Name e.Type)
+        
+    Seq.append auditFieldsSql dataFields
 
-    let newline = sprintf ",%s" System.Environment.NewLine
-    String.concat newline (Seq.append auditFieldsSql dataFields)
+let ComposeConstraints (c:TableConfig) (t:TableDef) =
+    if t.ForeignKeys.Count > 0 then
+        t.ForeignKeys
+        |> Seq.map (fun e -> sprintf "CONSTRAINT FK_%s_%s FOREIGN KEY (%s) REFERENCES [dbo].[%s] (Id)" t.Name e.ForeignTable e.ForeignField e.ForeignTable)
+    else
+        Seq.empty<string>
 
 let ComposeTableDefSql (fm:FieldTypeToSql) (schema:string) (c:TableConfig) (t:TableDef) =
     let fieldsSql = ComposeFieldsSql fm c t
-    let newline = System.Environment.NewLine
-    sprintf "CREATE TABLE [%s].[%s]%s(%s%s%s)%sgo%s" schema t.Name newline newline fieldsSql newline newline newline
+    let constraintsSql = ComposeConstraints c t
+    let newlineDelimieter = sprintf ",%s" newline
+    let tableSql = String.concat newlineDelimieter (Seq.append fieldsSql constraintsSql)
+    sprintf "CREATE TABLE [%s].[%s]%s(%s%s%s)%sgo%s" schema t.Name newline newline tableSql newline newline newline
 
 let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
     let newline = System.Environment.NewLine
