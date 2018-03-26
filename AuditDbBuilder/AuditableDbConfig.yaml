@@ -3,33 +3,31 @@
   TableFieldIndentation: 4
   TypeMap:
   - Type: ss
-    Output: NVARCHAR(50) NOT NULL
-  - Type: _ss
-    Output: NVARCHAR(50) NULL
+    Output: NVARCHAR(50)
   - Type: ls
-    Output: NVARCHAR(500) NOT NULL
-  - Type: _ls
-    Output: NVARCHAR(500) NULL
+    Output: NVARCHAR(500)
   - Type: d
-    Output: DECIMAL(19, 6) NOT NULL
-  - Type: _d
-    Output: DECIMAL(19, 6) NULL
+    Output: DECIMAL(19, 6)
   - Type: i
-    Output: INT NOT NULL
-  - Type: _i
-    Output: INT NULL
+    Output: INT
   - Type: pk
     Output: INT IDENTITY(1, 1) PRIMARY KEY
   - Type: dt
-    Output: DATETIMEOFFSET NOT NULL
-  - Type: _dt
-    Output: DATETIMEOFFSET NULL
+    Output: DATETIMEOFFSET
   - Type: bi
-    Output: BIGINT NOT NULL
-  - Type: _bi
-    Output: BIGINT NULL
+    Output: BIGINT
   - Type: guid
-    Output:   UNIQUEIDENTIFIER NOT NULL
+    Output:   UNIQUEIDENTIFIER
+  - Type: upc
+    Output: CHAR(12)
+  - Type: ean
+    Output: CHAR(13)
+  - Type: gtin
+    Output: CHAR(14)
+  - Type: asin
+    Output: CHAR(10)
+  - Type: b
+    Output: BIT
   AuditFields:
   - Name: Id
     Type: pk
@@ -267,3 +265,47 @@ Tables:
     Unique:
     - TenantId
     - VendorPartId
+  - Name: Catalog
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: VendorId
+      Type: i
+    - Name: ExtId
+      Type: ss
+    - Name: Desc
+      Type: ls
+    - Name: LoadedByUserId
+      Type: i
+    - Name: LoadedDateTime
+      Type: dt
+    Unique:
+    - TenantId
+    - VendorId
+    - ExtId
+  - Name: CatalogItem
+    Fields:
+    - Name: TenantId
+      Type: i
+    - Name: CatalogId
+      Type: i
+    - Name: PartNbr
+      Type: ss
+    - Name: UnitCost
+      Type: d
+    - Name: PurchaseOrderUnitOfMeasure
+      Type: ss
+    - Name: CountPerPurchaseUnit
+      Type: i
+    - Name: MinPurchaseQty
+      Type: i
+    - Name: Msrp
+      Type: _d
+    - Name: Desc
+      Type: _ls
+    - Name: Upc
+      Type: _upc
+    Unique:
+    - TenantId
+    - CatalogId
+    - PartNbr

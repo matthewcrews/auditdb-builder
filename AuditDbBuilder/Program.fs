@@ -16,7 +16,12 @@ type AuditFieldsSet = AuditableDbConfig.Config_Type.AuditFields_Item_Type
 let newline = System.Environment.NewLine
 
 let FieldTypeToStringBuilder (d:Map<string, string>) =
-    fun s -> d.[s]
+    fun (s:string) -> 
+        if s.Contains("_") then
+            let k = s.Substring(1)
+            d.[k] +  " NULL"
+        else
+            d.[s] + " NOT NULL"
 
 let FieldDefToString (m: FieldTypeToSql) (f:FieldDef) =
     sprintf "[%s] %s" f.Name (m f.Type)
