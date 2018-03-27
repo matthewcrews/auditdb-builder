@@ -99,21 +99,28 @@ Tables:
     - Name: Description
       Type: ls
     Unique:
+    - TenantId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: AltId
     Fields:
     - Name: TenantId
       Type: i
-    - Name: AltIdType
+    - Name: AltIdTypeId
       Type: i
-    - Name: Value
+    - Name: AltIdValue
       Type: ss
     Unique:
     - TenantId
     - AltIdTypeId
-    - Value
-    ForeignKeys: {}
+    - AltIdValue
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: AltIdType
+      Field: AltiIdTypeId
   - Name: Listing
     Fields:
     - Name: TenantId
@@ -128,7 +135,11 @@ Tables:
     - TenantId
     - MarketplaceId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: Marketplace
+      Field: MarketplaceId
   - Name: Marketplace
     Fields:
     - Name: TenantId
@@ -152,7 +163,9 @@ Tables:
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: Status
     Fields:
     - Name: TenantId
@@ -165,7 +178,9 @@ Tables:
     - TenantId
     - StatusTypeId
     - Code
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: StockItem
     Fields:
     - Name: TenantId
@@ -179,7 +194,9 @@ Tables:
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: StockItemAltId
     Fields:
     - Name: TenantId
@@ -189,7 +206,9 @@ Tables:
     - Name: AltId
       Type: i
     Unique: {}
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: Vendor
     Fields:
     - Name: TenantId
@@ -201,7 +220,9 @@ Tables:
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: VendorPart
     Fields:
     - Name: TenantId
@@ -216,7 +237,11 @@ Tables:
     - TenantId
     - VendorId
     - Nbr
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: Vendor
+      Field: VendorId
   - Name: VendorPartAltId
     Fields:
     - Name: TenantId
@@ -229,7 +254,11 @@ Tables:
     - TenantId
     - VendorPartid
     - AltId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: VendorPart
+      Field: VendorPartId
   - Name: VendorPartListingMatch
     Fields:
     - Name: TenantId
@@ -247,7 +276,15 @@ Tables:
     - VendorPartId
     - MarketplaceId
     - ListingId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: VendorPart
+      Field: VendorPartId
+    - Table: Marketplace
+      Field: MarketplaceId
+    - Table: Listing
+      Field: ListingId
   - Name: VendorPartListingAssignment
     Fields:
     - Name: TenantId
@@ -262,7 +299,15 @@ Tables:
     - TenantId
     - VendorPartId
     - MarketplaceId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: VendorPart
+      Field: VendorPartId
+    - Table: Marketplace
+      Field: MarketplaceId
+    - Table: Listing
+      Field: ListingId
   - Name: VendorPartStockItemMatch
     Fields:
     - Name: TenantId
@@ -277,7 +322,13 @@ Tables:
     - TenantId
     - VendorPartId
     - StockItemId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: VendorPart
+      Field: VendorPartId
+    - Table: StockItem
+      Field: StockItemId
   - Name: VendorPartStockItemAssignment
     Fields:
     - Name: TenantId
@@ -289,7 +340,13 @@ Tables:
     Unique:
     - TenantId
     - VendorPartId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: VendorPart
+      Field: VendorPartId
+    - Table: StockItem
+      Field: StockItemId
   - Name: Catalog
     Fields:
     - Name: TenantId
@@ -308,7 +365,11 @@ Tables:
     - TenantId
     - VendorId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: Vendor
+      Field: VendorId
   - Name: CatalogItem
     Fields:
     - Name: TenantId
@@ -331,8 +392,18 @@ Tables:
       Type: _ls
     - Name: Upc
       Type: _upc
+    - Name: Ean
+      Type: ean
+    - Name: Gtin
+      Type: gtin
+    - Name: Asin
+      Type: asin
     Unique:
     - TenantId
     - CatalogId
     - PartNumber
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
+    - Table: Catalog
+      Field: CatalogId
