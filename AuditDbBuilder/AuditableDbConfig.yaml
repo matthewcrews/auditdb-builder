@@ -1,5 +1,5 @@
 ﻿TableConfig:
-  OutputSchema: dbo
+  OutputSchema: app
   AuditTableNameAppend: History
   TableFieldIndentation: 4
   StartingIdNumber: 65536
@@ -30,45 +30,22 @@
     Output: CHAR(10)
   - Type: b
     Output: BIT
-  HistoryTableTypeMap:
-  - Type: ss
-    Output: NVARCHAR(50)
-  - Type: ls
-    Output: NVARCHAR(500)
-  - Type: d
-    Output: DECIMAL(19, 6)
-  - Type: i
-    Output: INT
-  - Type: pk
-    Output: INT
-  - Type: dt
-    Output: DATETIME2
-  - Type: bi
-    Output: BIGINT
-  - Type: guid
-    Output: UNIQUEIDENTIFIER
-  - Type: upc
-    Output: CHAR(12)
-  - Type: ean
-    Output: CHAR(13)
-  - Type: gtin
-    Output: CHAR(14)
-  - Type: asin
-    Output: CHAR(10)
-  - Type: b
-    Output: BIT
+  - Type: as
+    Output: DATETIME2 GENERATED ALWAYS AS ROW START
+  - Type: ae
+    Output: DATETIME2 GENERATED ALWAYS AS ROW END
   AuditFields:
-  - Name: Id
-    Type: pk
   - Name: EffDateTime
-    Type: dt
+    Type: as
   - Name: ExpDateTime
-    Type: dt
+    Type: ae
   - Name: Ver
     Type: bi
 Tables:
   - Name: User
     Fields:
+    - Name: UserId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -83,6 +60,8 @@ Tables:
       Field: TenantId
   - Name: Tenant
     Fields:
+    - Name: TenantId
+      Type: pk
     - Name: TenantGuid
       Type: guid
     - Name: Description
@@ -92,6 +71,8 @@ Tables:
     ForeignKeys: {}
   - Name: AltIdType
     Fields:
+    - Name: AltIdTypeId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -106,6 +87,8 @@ Tables:
       Field: TenantId
   - Name: AltId
     Fields:
+    - Name: AltIdId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: AltIdTypeId
@@ -123,6 +106,8 @@ Tables:
       Field: AltiIdTypeId
   - Name: Listing
     Fields:
+    - Name: ListingId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: MarketplaceId
@@ -142,6 +127,8 @@ Tables:
       Field: MarketplaceId
   - Name: Marketplace
     Fields:
+    - Name: MarketplaceId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -151,9 +138,13 @@ Tables:
     Unique:
     - TenantId
     - ExtId
-    ForeignKeys: {}
+    ForeignKeys:
+    - Table: Tenant
+      Field: TenantId
   - Name: StatusType
     Fields:
+    - Name: StatusTypeId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -168,6 +159,8 @@ Tables:
       Field: TenantId
   - Name: Status
     Fields:
+    - Name: StatusId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: StatusTypeId
@@ -181,8 +174,12 @@ Tables:
     ForeignKeys:
     - Table: Tenant
       Field: TenantId
+    - Table: StatusType
+      Field: StatusTypeId
   - Name: StockItem
     Fields:
+    - Name: StockItemId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -203,14 +200,23 @@ Tables:
       Type: i
     - Name: StockItemId
       Type: i
-    - Name: AltId
+    - Name: AltIdId
       Type: i
-    Unique: {}
+    Unique:
+    - TenantId
+    - StockItemId
+    - AltId
     ForeignKeys:
     - Table: Tenant
       Field: TenantId
+    - Table: StockItem
+      Field: StockItemId
+    - Table: AltId
+      Field: AltIdId
   - Name: Vendor
     Fields:
+    - Name: VendorId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: ExtId
@@ -225,18 +231,20 @@ Tables:
       Field: TenantId
   - Name: VendorPart
     Fields:
+    - Name: VendorPartId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: VendorId
       Type: i
-    - Name: Nbr
+    - Name: PartNumber
       Type: ss
     - Name: Description
       Type: ls
     Unique:
     - TenantId
     - VendorId
-    - Nbr
+    - PartNumber
     ForeignKeys:
     - Table: Tenant
       Field: TenantId
@@ -248,17 +256,19 @@ Tables:
       Type: i
     - Name: VendorPartId
       Type: i
-    - Name: AltId
+    - Name: AltIdId
       Type: i
     Unique:
     - TenantId
     - VendorPartid
-    - AltId
+    - AltIdId
     ForeignKeys:
     - Table: Tenant
       Field: TenantId
     - Table: VendorPart
       Field: VendorPartId
+    - Table: AltId
+      Field: AltiIdId
   - Name: VendorPartListingMatch
     Fields:
     - Name: TenantId
@@ -285,6 +295,8 @@ Tables:
       Field: MarketplaceId
     - Table: Listing
       Field: ListingId
+    - Table: Status
+      Field: StatusId
   - Name: VendorPartListingAssignment
     Fields:
     - Name: TenantId
@@ -349,6 +361,8 @@ Tables:
       Field: StockItemId
   - Name: Catalog
     Fields:
+    - Name: CatalogId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: VendorId
@@ -372,6 +386,8 @@ Tables:
       Field: VendorId
   - Name: CatalogItem
     Fields:
+    - Name: CatalogItemId
+      Type: pk
     - Name: TenantId
       Type: i
     - Name: CatalogId

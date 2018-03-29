@@ -27,17 +27,18 @@ let ComposeFieldsSql (fieldMapper:FieldTypeToSql) (c:TableConfig) (t:TableDef) =
     let auditFieldsSql = 
         c.AuditFields
         |> Seq.map (fun e -> fieldComposer e.Name e.Type)
+        |> (fun x -> Seq.append x [sprintf "%sPERIOD FOR SYSTEM_TIME(EffDateTime, ExpDateTime)" indentation])
 
     let dataFields =
         t.Fields
         |> Seq.map (fun e -> fieldComposer e.Name e.Type)
         
-    Seq.append auditFieldsSql dataFields
+    Seq.append dataFields auditFieldsSql 
 
 let ComposeConstraints (c:TableConfig) (t:TableDef) (tableName:string) =
     if t.ForeignKeys.Count > 0 then
         t.ForeignKeys
-        |> Seq.map (fun e -> sprintf "%sCONSTRAINT FK_%s_%s FOREIGN KEY (%s) REFERENCES [dbo].[%s] (Id)" (String.replicate c.TableFieldIndentation " ") tableName e.Table e.Field e.Table)
+        |> Seq.map (fun e -> sprintf "%sCONSTRAINT FK_%s_%s FOREIGN KEY (%s) REFERENCES [app].[%s] (%s)" (String.replicate c.TableFieldIndentation " ") tableName e.Table e.Field e.Table e.Field)
     else
         Seq.empty<string>
 
@@ -49,7 +50,14 @@ let ComposeTableDefSql (fm:FieldTypeToSql) (schema:string) (c:TableConfig) (t:Ta
         | false -> Seq.empty<string>
     let newlineDelimieter = sprintf ",%s" newline
     let tableSql = String.concat newlineDelimieter (Seq.append fieldsSql constraintsSql)
-    sprintf "CREATE TABLE [%s].[%s]%s(%s%s%s)%sgo%s" schema tableName newline newline tableSql newline newline newline
+    sprintf """CREATE TABLE [%s].[%s](
+%s
+)
+WITH 
+    (
+        SYSTEM_VERSIONING = ON (HISTORY_TABLE = [%s].[%sHistory])
+    );
+go""" schema tableName tableSql schema tableName
 
 let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
     let newline = System.Environment.NewLine
@@ -57,7 +65,7 @@ let ComposeUniqueConstriantSql (schema:string) (t:TableDef) =
         t.Unique
         |> Seq.map (fun e -> sprintf "[%s]" e)
         |> String.concat ", "
-    sprintf "CREATE UNIQUE INDEX UIDX_%s on [%s].[%s] (%s);%sgo" t.Name schema t.Name fields newline
+    sprintf "CREATE UNIQUE INDEX UX_%s on [%s].[%s] (%s);%sgo" t.Name schema t.Name fields newline
 
 let ComposeTableSql (fm:FieldTypeToSql) (c:TableConfig) (schema:string) (t:TableDef) (includeForeignKeys:bool) (includeUniqueConst:bool) (tableName:string) =
     if includeUniqueConst && t.ForeignKeys.Count > 0 then
@@ -71,7 +79,7 @@ let CreateDir d =
         |> ignore
 
 let ComposeSequenceSql (schema:string) (t:TableDef) =
-    sprintf """CREATE SEQUENCE [%s].[%sVer]
+    sprintf """CREATE SEQUENCE [%s].[%sVersion]
     AS BIGINT
     START WITH 1
     INCREMENT BY 1
@@ -101,11 +109,11 @@ let main argv =
         |> Map.ofSeq
         |> FieldTypeToStringBuilder
 
-    let historyTableFieldMapper =
-        auditConfig.TableConfig.HistoryTableTypeMap
-        |> Seq.map (fun e -> e.Type, e.Output)
-        |> Map.ofSeq
-        |> FieldTypeToStringBuilder
+    //let historyTableFieldMapper =
+    //    auditConfig.TableConfig.HistoryTableTypeMap
+    //    |> Seq.map (fun e -> e.Type, e.Output)
+    //    |> Map.ofSeq
+    //    |> FieldTypeToStringBuilder
     
 
     for t in auditConfig.Tables do
@@ -113,11 +121,11 @@ let main argv =
         let tableSql = ComposeTableSql tableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t true true t.Name
         File.WriteAllText(tableSqlFile, tableSql)
 
-        let auditSqlFile = Path.Combine(auditDir, (t.Name + auditConfig.TableConfig.AuditTableNameAppend + ".sql"))
-        let auditSql = ComposeTableSql historyTableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t false false (t.Name + auditConfig.TableConfig.AuditTableNameAppend)
-        File.WriteAllText(auditSqlFile, auditSql)
+        //let auditSqlFile = Path.Combine(auditDir, (t.Name + auditConfig.TableConfig.AuditTableNameAppend + ".sql"))
+        //let auditSql = ComposeTableSql historyTableFieldMapper auditConfig.TableConfig auditConfig.TableConfig.OutputSchema t false false (t.Name + auditConfig.TableConfig.AuditTableNameAppend)
+        //File.WriteAllText(auditSqlFile, auditSql)
 
-        let sequenceSqlFile = Path.Combine(sequenceDir, (t.Name + "Ver.sql"))
+        let sequenceSqlFile = Path.Combine(sequenceDir, (t.Name + "Version.sql"))
         let sequenceSql = ComposeSequenceSql auditConfig.TableConfig.OutputSchema t
         File.WriteAllText(sequenceSqlFile, sequenceSql)    
 
